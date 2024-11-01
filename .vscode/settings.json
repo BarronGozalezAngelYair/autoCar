@@ -1,0 +1,9 @@
+{
+    "liveshare.accessibility.soundsEnabled": false,
+    "liveshare.accessibility.soundVolume": 0,
+    "liveshare.showVerboseNotifications": false,
+    "zenMode.silentNotifications": false,
+    "errorLens.codeLensOnClick": "none",
+    "errorLens.gutterIconsFollowCursorOverride": false,
+    "errorLens.messageEnabled": false
+}
