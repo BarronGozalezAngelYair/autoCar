@@ -18,7 +18,11 @@ router.get('/usuarios', (req, res) => {
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    const query = 'SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?';
+    const query = `SELECT u.id, u.nombre, u.app, u.apm, u.correo, u.id_perfil, p.perfil 
+    FROM usuarios u
+    JOIN perfiles p ON u.id_perfil = p.id
+    WHERE u.correo = ? AND u.contrasena = ? AND p.perfil = 'Trabajador' 
+    `;
     connection.query(query, [email, password], (err, results) => {
         if (err) {
             console.error('Error en la consulta de inicio de sesión:', err);
@@ -31,6 +35,133 @@ router.post('/login', (req, res) => {
         } else {
             res.json({ success: false, message: 'Credenciales inválidas' });
         }
+    });
+});
+
+//Endpoint Asignaciones
+router.get('/asignaciones', (req, res) => {
+    const query = `
+        SELECT 
+            c.id AS id_cita,
+            c.fecha,
+            c.hora,
+            CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS cliente
+        FROM citas AS c
+        JOIN usuarios AS u ON c.id_usuario = u.id
+        JOIN perfiles AS p ON u.id_perfil = p.id
+        WHERE p.perfil = 'Cliente';
+    `;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error al obtener las asignaciones:', err);
+            res.status(500).json({ error: 'Error al obtener las asignaciones'});
+        } else {
+            res.json(results);
+        }
+    });
+});
+
+// Endpoint para obtener detalles de asignación
+router.get('/asignaciones/:id_cita', (req, res) => {
+    const { id_cita } = req.params;
+    const query = `
+        SELECT 
+            c.fecha,
+            c.hora,
+            CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS cliente,
+            s.servicio,
+            g.imagen AS imagen
+        FROM citas AS c
+        JOIN usuarios AS u ON c.id_usuario = u.id
+        JOIN perfiles AS p ON u.id_perfil = p.id
+        LEFT JOIN citas_servicios_trabajadores AS cst ON c.id = cst.id_cita
+        LEFT JOIN servicios_trabajadores AS st ON cst.id_servicio_u = st.id
+        LEFT JOIN servicios AS s ON st.id_servicio = s.id
+        LEFT JOIN vehiculos AS v ON u.id = v.id_usuario
+        LEFT JOIN galeria AS g ON v.id = g.id_vehiculo
+        WHERE c.id = ?;
+    `;
+
+    connection.query(query, [id_cita], (err, results) => {
+        if (err) {
+            console.error('Error al obtener detalles de la asignación:', err);
+            return res.status(500).json({ error: 'Error al obtener los detalles de la asignación' });
+        }
+        res.json(results[0]);
+    });
+});
+
+
+//  EndPoint para guardar reportes
+router.post('/reportes', (req, res) => {
+
+    const { descripcion, fechaInicio, fechaTermino, id_cita } = req.body;
+
+    console.log("Datos recibidos en el servidor:");
+    console.log(JSON.stringify(req.body, null, 2));
+
+
+    if (!descripcion || !fechaInicio || !fechaTermino || !id_cita) {
+        console.log("Error: Faltan campos obligatorios.");
+        return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
+    }
+
+    const query = 'INSERT INTO reportes (descripcion, fecha_inicio, fecha_fin, id_cita) VALUES (?, ?, ?, ?)';
+    connection.query(query, [descripcion, fechaInicio, fechaTermino, id_cita], (err, result) => {
+        if (err) {
+            console.error('Error al insertar el reporte:', err);
+            return res.status(500).json({ success: false, message: 'Error al insertar el reporte' });
+        }
+        console.log("Reporte guardado exitosamente con ID:", result.insertId);
+        res.json({ success: true, message: 'Reporte guardado exitosamente', reportId: result.insertId });
+    });
+});
+
+//EndPoint para completados
+router.get('/completados', (req, res) => {
+    const  query = `
+        SELECT
+            CONCAT(u.nombre, ' ', u.app, ' ', u.apm)AS cliente,
+            v.modelo AS modelo_carro,
+            r.descripcion,
+            r.fecha_inicio,
+            r.fecha_fin
+        FROM reportes r
+        JOIN citas c ON r.id_cita = c.id
+        JOIN usuarios u ON c.id_usuario = u.id
+        JOIN vehiculos v ON u.id = v.id_usuario
+        WHERE r.fecha_fin IS NOT NULL;
+    `;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error al obtener los completados:', err);
+            return res.status(500).json({ error: 'Error al obtener los completados' });
+        }
+        res.json(results);
+    });
+});
+
+
+//EndPoint para Trabajadores
+router.get('/usuarios/trabajadores', (req, res) => {
+    const query = `
+    SELECT 
+        CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS nombre_completo,
+        u.telefono,
+        u.correo
+    FROM usuarios AS u
+    JOIN perfiles AS p ON u.id_perfil = p.id
+    WHERE p.id = 3;
+`;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error al obtener los trabajadores:', err);
+            return res.status(500).json({ error: 'Error al obtener los trabajadores' });
+        }
+        res.json(results);
     });
 });
 

@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import {
   View,
   TextInput,
-  Button,
+  TouchableOpacity,
+  Text,
   StyleSheet,
   Alert,
-  Text,
+  Image
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 const LoginScreen = ({ navigation }) => {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -28,11 +29,11 @@ const LoginScreen = ({ navigation }) => {
 
       const data = await response.json();
 
-    if (data.success) {
+      if (data.success) {
         Alert.alert('Bienvenido', 'Inicio de sesión correcto');
-        navigation.navigate('Asignaciones');
+        navigation.replace('MainTabs');
       } else {
-        Alert.alert('Error', 'Credenciales inválidas');
+        Alert.alert('Error', 'Permiso Denegado');
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
@@ -40,36 +41,42 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-
   return (
-    <LinearGradient colors={['#b0bec5', '#1e3c72']} style={styles.container}>
-      <Text style={styles.title}>Iniciar Sesión</Text>
+    <View style={styles.container}>
+      <Image 
+        source={require('../images/login.png')} 
+        style={styles.logo}
+      />
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Correo"
-          placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+      <View style={styles.card}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Correo"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
       </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-      </View>
-
-      <Button title="Entrar" onPress={handleLogin} color="#4e4feb" />
-    </LinearGradient>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Entrar</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -78,28 +85,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
-  title: {
-    fontSize: 32,
-    fontFamily: 'sans-serif-light',
-    marginBottom: 40,
-    color: '#FFF',
+  logo: {
+    width: 500,
+    height: 250,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 500,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 14,
+    marginBottom: 70,
   },
   inputContainer: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#FFF',
+    backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    elevation: 5,
+    marginBottom: 15,
+    paddingHorizontal: 15,
   },
   input: {
     height: 50,
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'sans-serif',
     color: '#333',
+  },
+  button: {
+    width: '90%',
+    maxWidth: 280,
+    backgroundColor: '#2F62EE',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 15,
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'sans-serif-medium',
   },
 });
 

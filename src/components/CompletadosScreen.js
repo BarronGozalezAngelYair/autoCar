@@ -1,21 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 
-const CompletadosScreen = ({ navigation }) => {
-  const completados = [
-    {
-      cliente: 'Cliente 1',
-      fecha: '2024-10-07 10:00',
-      servicio: 'Servicio 1',
-      imagen: '../images/carro1.jpg', 
-    },
-    {
-      cliente: 'Cliente 2',
-      fecha: '2024-10-08 12:00',
-      servicio: 'Servicio 2',
-      imagen: '../images/carro1.jpg',
-    },
-  ];
+const CompletadosScreen = () => {
+  const [completados, setCompletados] = useState([]);
+
+  useEffect(() => {
+    fetch('http://192.168.56.1:3001/api/completados') 
+      .then((response) => response.json())
+      .then((data) => setCompletados(data))
+      .catch((error) => console.error('Error al obtener los completados:', error));
+  }, []);
+
+  const fmtfecha = (fechaISO) => {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -24,15 +26,13 @@ const CompletadosScreen = ({ navigation }) => {
         style={styles.logo}
       />
       <View style={styles.completadosList}>
-        {completados.map((completados, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.card}
-            onPress={() => navigation.navigate('Informacion', completados)}
-          >
-            <Text style={styles.title}>{completados.cliente}</Text>
-            <Text style={styles.details}>{completados.fecha}</Text>
-          </TouchableOpacity>
+        {completados.map((completado, index) => (
+          <View key={index} style={styles.card}>
+            <Text style={styles.details}><Text style={styles.label}>Cliente:</Text> {completado.cliente}</Text>
+            <Text style={styles.details}><Text style={styles.label}>Modelo:</Text> {completado.modelo_carro}</Text>
+            <Text style={styles.details}><Text style={styles.label}>Descripción:</Text> {completado.descripcion}</Text>
+            <Text style={styles.details}><Text style={styles.label}>Fechas:</Text> {fmtfecha(completado.fecha_inicio)} - {fmtfecha(completado.fecha_fin)}</Text>
+          </View>
         ))}
       </View>
     </ScrollView>
@@ -49,18 +49,18 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 500,
-    height: 200,
+    height: 150,
     resizeMode: 'contain',
     alignSelf: 'center',
     marginBottom: 20,
   },
-  asignacionesList: {
+  completadosList: {
     width: '100%',
   },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    padding: 20,
+    padding: 15,
     marginVertical: 5,
     shadowColor: '#000',
     shadowOffset: {
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 10,
   },
   title: {
     fontSize: 18,
@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 16,
     color: '#555',
+    marginBottom: 5, // Espacio entre cada línea de texto
+  },
+  label: {
+    fontWeight: 'bold',
   },
 });
 
