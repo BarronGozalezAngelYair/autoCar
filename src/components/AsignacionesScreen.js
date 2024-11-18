@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   ScrollView,
   Image
 } from 'react-native';
@@ -21,7 +21,7 @@ const AsignacionesScreen = ({ navigation }) => {
   useEffect(() => {
     obtenerAsignaciones();
 
-    const interval = setInterval(obtenerAsignaciones, 30000); 
+    const interval = setInterval(obtenerAsignaciones, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -39,7 +39,7 @@ const AsignacionesScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image 
+      <Image
       source={require('../images/mvl_asignaciones.png')}
       style={styles.logo}
       />
