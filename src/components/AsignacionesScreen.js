@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image
+  Image,
 } from 'react-native';
 
 const AsignacionesScreen = ({ navigation }) => {
@@ -14,7 +14,7 @@ const AsignacionesScreen = ({ navigation }) => {
   const obtenerAsignaciones = () => {
     fetch('http://192.168.56.1:3001/api/asignaciones')
       .then(response => response.json())
-      .then(data => setAsignaciones(data))
+      .then((data) => setAsignaciones(data))
       .catch(error => console.error('Error al obtener asignaciones:', error));
   };
 
@@ -36,6 +36,8 @@ const AsignacionesScreen = ({ navigation }) => {
   const fmthora = (hora) => {
     return hora.slice(0, 5);
   };
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

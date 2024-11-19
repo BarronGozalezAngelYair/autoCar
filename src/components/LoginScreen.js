@@ -5,14 +5,16 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  Alert,
-  Image
+  Image,
 } from 'react-native';
-
+import Modal from 'react-native-modal';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalType, setModalType] = useState('success');
 
   const handleLogin = async () => {
     try {
@@ -30,23 +32,48 @@ const LoginScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert('Bienvenido', 'Inicio de sesión correcto');
-        navigation.replace('MainTabs');
+        setModalType('success');
+        setModalMessage('Inicio de sesión correcto');
+        setIsModalVisible(true);
+        setTimeout(() => {
+          setIsModalVisible(false);
+          navigation.replace('MainTabs');
+        }, 2000);
       } else {
-        Alert.alert('Error', 'Permiso Denegado');
+        setModalType('error');
+        setModalMessage('Permiso Denegado');
+        setIsModalVisible(true);
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      Alert.alert('Error', 'Hubo un problema al conectarse con el servidor');
+      setModalType('error');
+      setModalMessage('Hubo un problema al conectarse con el servidor');
+      setIsModalVisible(true);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={require('../images/login.png')} 
-        style={styles.logo}
-      />
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={() => setIsModalVisible(false)}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <View
+          style={[
+            styles.modalContent,
+            modalType === 'success'
+              ? styles.successBackground
+              : styles.errorBackground,
+          ]}
+        >
+          <Text style={styles.modalText}>{modalMessage}</Text>
+        </View>
+      </Modal>
+
+      <Image source={require('../images/login.png')} style={styles.logo} />
 
       <View style={styles.card}>
         <View style={styles.inputContainer}>
@@ -135,6 +162,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'sans-serif-medium',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  successBackground: {
+    backgroundColor: '#2F62EE',
+  },
+  errorBackground: {
+    backgroundColor: '#EE2F2F',
+  },
+  modalText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'sans-serif-medium',
+    textAlign: 'center',
   },
 });
 

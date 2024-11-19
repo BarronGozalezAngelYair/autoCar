@@ -3,6 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 import LoginScreen from './src/components/LoginScreen';
 import AsignacionesScreen from './src/components/AsignacionesScreen';
 import InformacionScreen from './src/components/InformacionScreen';
@@ -15,14 +16,38 @@ const Tab = createBottomTabNavigator();
 
 const MainTabs = () => (
   <Tab.Navigator
-    initialRouteName=""
+    initialRouteName="Asignaciones"
     screenOptions={{
       tabBarShowLabel: false,
     }}
   >
-    <Tab.Screen name="Asignaciones" component={AsignacionesScreen} />
-    <Tab.Screen name="Completados" component={CompletadosScreen} />
-    <Tab.Screen name="Perfil" component={PerfilScreen} />
+    <Tab.Screen
+      name="Asignaciones"
+      component={AsignacionesScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+       <Icon name="list-outline" size={size} color={color} /> 
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Completados"
+      component={CompletadosScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Icon name="checkmark-done-outline" size={size} color={color} /> 
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Perfil"
+      component={PerfilScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Icon name="person-circle-outline" size={size} color={color} />
+        ),
+      }}
+    />
   </Tab.Navigator>
 );
 

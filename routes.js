@@ -49,7 +49,8 @@ router.get('/asignaciones', (req, res) => {
         FROM citas AS c
         JOIN usuarios AS u ON c.id_usuario = u.id
         JOIN perfiles AS p ON u.id_perfil = p.id
-        WHERE p.perfil = 'Cliente';
+        LEFT JOIN reportes AS r ON c.id = r.id_cita
+        WHERE p.perfil = 'Cliente' AND r.id IS NULL;
     `;
 
     connection.query(query, (err, results) => {
@@ -139,6 +140,7 @@ router.get('/completados', (req, res) => {
             console.error('Error al obtener los completados:', err);
             return res.status(500).json({ error: 'Error al obtener los completados' });
         }
+        console.log('Datos obtenidos:', results)
         res.json(results);
     });
 });

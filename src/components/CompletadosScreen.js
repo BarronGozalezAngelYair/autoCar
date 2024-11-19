@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 16,
     color: '#555',
-    marginBottom: 5, // Espacio entre cada línea de texto
+    marginBottom: 5,
   },
   label: {
     fontWeight: 'bold',

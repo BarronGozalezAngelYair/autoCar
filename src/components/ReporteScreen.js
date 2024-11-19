@@ -1,4 +1,4 @@
-import React, { useState } from "react"; 
+import React, { useState } from 'react';
 import {
     View,
     TextInput,
@@ -7,12 +7,12 @@ import {
     Image,
     Alert,
     TouchableOpacity,
-    Platform
+    Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ReporteScreen = ({ route, navigation }) => {
-    const { id_cita } = route.params;
+    const { id_cita} = route.params;
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaTermino, setFechaTermino] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
         fontFamily: 'sans-serif',
         color: '#333',
     },
-    descriptionInput: { 
+    descriptionInput: {
         height: 100,
         fontSize: 16,
         fontFamily: 'sans-serif',
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         elevation: 15,
-        marginTop: 20, 
+        marginTop: 20,
     },
     buttonText: {
         color: '#FFF',
