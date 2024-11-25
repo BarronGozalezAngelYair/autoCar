@@ -5,19 +5,23 @@ import {
     Text,
     StyleSheet,
     Image,
-    Alert,
     TouchableOpacity,
     Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Modal from 'react-native-modal';
 
 const ReporteScreen = ({ route, navigation }) => {
-    const { id_cita} = route.params;
+    const { id_cita } = route.params;
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaTermino, setFechaTermino] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [showDataPickerInicio, setShowDataPickerInicio] = useState(false);
     const [showDataPickerTermino, setShowDataPickerTermino] = useState(false);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalType, setModalType] = useState('success');
 
     const handleDateChange = (event, selectedDate, type) => {
         const currentDate = selectedDate || new Date();
@@ -33,6 +37,13 @@ const ReporteScreen = ({ route, navigation }) => {
     };
 
     const handleTerminar = async () => {
+        if (!descripcion || !fechaInicio || !fechaTermino) {
+            setModalType('error');
+            setModalMessage('Por favor completa todos los campos.');
+            setIsModalVisible(true);
+            return;
+        }
+
         try {
             const formatDate = (dateString) => {
                 const [day, month, year] = dateString.split('/');
@@ -58,19 +69,47 @@ const ReporteScreen = ({ route, navigation }) => {
             const data = await response.json();
 
             if (data.success) {
-                Alert.alert('Éxito', 'Reporte guardado correctamente');
-                navigation.navigate('Completados');
+                setModalType('success');
+                setModalMessage('Reporte guardado correctamente');
+                setIsModalVisible(true);
+                setTimeout(() => {
+                    setIsModalVisible(false);
+                    navigation.navigate('Completados');
+                }, 2000);
             } else {
-                Alert.alert('Error', 'Hubo un problema al guardar el reporte');
+                setModalType('error');
+                setModalMessage('Hubo un problema al guardar el reporte');
+                setIsModalVisible(true);
             }
         } catch (error) {
             console.error('Error al enviar el reporte:', error);
-            Alert.alert('Error', 'No se pudo conectar con el servidor');
+            setModalType('error');
+            setModalMessage('No se pudo conectar con el servidor');
+            setIsModalVisible(true);
         }
     };
 
     return (
         <View style={styles.container}>
+            <Modal
+                isVisible={isModalVisible}
+                onBackdropPress={() => setIsModalVisible(false)}
+                animationIn="slideInUp"
+                animationOut="slideOutDown"
+                backdropOpacity={0.5}
+            >
+                <View
+                    style={[
+                        styles.modalContent,
+                        modalType === 'success'
+                            ? styles.successBackground
+                            : styles.errorBackground,
+                    ]}
+                >
+                    <Text style={styles.modalText}>{modalMessage}</Text>
+                </View>
+            </Modal>
+
             <Image
                 source={require('../images/reportee.png')}
                 style={styles.logo}
@@ -193,6 +232,26 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     buttonText: {
+        color: '#FFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: 'sans-serif-medium',
+        textAlign: 'center',
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    successBackground: {
+        backgroundColor: '#2F62EE',
+    },
+    errorBackground: {
+        backgroundColor: '#EE2F2F',
+    },
+    modalText: {
         color: '#FFF',
         fontSize: 18,
         fontWeight: 'bold',

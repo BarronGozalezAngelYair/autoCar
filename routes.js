@@ -99,12 +99,12 @@ router.post('/reportes', (req, res) => {
 
     const { descripcion, fechaInicio, fechaTermino, id_cita } = req.body;
 
-    console.log("Datos recibidos en el servidor:");
+    console.log('Datos recibidos en el servidor:');
     console.log(JSON.stringify(req.body, null, 2));
 
 
     if (!descripcion || !fechaInicio || !fechaTermino || !id_cita) {
-        console.log("Error: Faltan campos obligatorios.");
+        console.log('Error: Faltan campos obligatorios.');
         return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
     }
 
@@ -114,7 +114,7 @@ router.post('/reportes', (req, res) => {
             console.error('Error al insertar el reporte:', err);
             return res.status(500).json({ success: false, message: 'Error al insertar el reporte' });
         }
-        console.log("Reporte guardado exitosamente con ID:", result.insertId);
+        console.log('Reporte guardado exitosamente con ID:', result.insertId);
         res.json({ success: true, message: 'Reporte guardado exitosamente', reportId: result.insertId });
     });
 });
@@ -140,30 +140,35 @@ router.get('/completados', (req, res) => {
             console.error('Error al obtener los completados:', err);
             return res.status(500).json({ error: 'Error al obtener los completados' });
         }
-        console.log('Datos obtenidos:', results)
+        console.log('Datos obtenidos:', results);
         res.json(results);
     });
 });
 
 
 //EndPoint para Trabajadores
-router.get('/usuarios/trabajadores', (req, res) => {
+router.get('/usuarios/trabajadores/:id', (req, res) => {
+    const { id } = req.params;
     const query = `
-    SELECT 
-        CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS nombre_completo,
-        u.telefono,
-        u.correo
-    FROM usuarios AS u
-    JOIN perfiles AS p ON u.id_perfil = p.id
-    WHERE p.id = 3;
-`;
+        SELECT 
+            CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS nombre_completo,
+            u.telefono,
+            u.correo,
+            u.foto
+        FROM usuarios AS u
+        JOIN perfiles AS p ON u.id_perfil = p.id
+        WHERE p.id = 3 AND u.id = ?;
+    `;
 
-    connection.query(query, (err, results) => {
+    connection.query(query, [id], (err, results) => {
         if (err) {
             console.error('Error al obtener los trabajadores:', err);
             return res.status(500).json({ error: 'Error al obtener los trabajadores' });
         }
-        res.json(results);
+        if (results.length === 0) {
+            return res.status(400).json({ error: 'Trabajador no encontrado' });
+        }
+        res.json(results[0]);
     });
 });
 

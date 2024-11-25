@@ -8,8 +8,10 @@ import {
   Image,
 } from 'react-native';
 
+
 const AsignacionesScreen = ({ navigation }) => {
   const [asignaciones, setAsignaciones] = useState([]);
+
 
   const obtenerAsignaciones = () => {
     fetch('http://192.168.56.1:3001/api/asignaciones')
@@ -21,7 +23,7 @@ const AsignacionesScreen = ({ navigation }) => {
   useEffect(() => {
     obtenerAsignaciones();
 
-    const interval = setInterval(obtenerAsignaciones, 30000);
+    const interval = setInterval(obtenerAsignaciones, 40000);
     return () => clearInterval(interval);
   }, []);
 
@@ -36,8 +38,6 @@ const AsignacionesScreen = ({ navigation }) => {
   const fmthora = (hora) => {
     return hora.slice(0, 5);
   };
-
-
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

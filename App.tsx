@@ -3,13 +3,23 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import LoginScreen from './src/components/LoginScreen';
 import AsignacionesScreen from './src/components/AsignacionesScreen';
 import InformacionScreen from './src/components/InformacionScreen';
 import ReporteScreen from './src/components/ReporteScreen';
 import CompletadosScreen from './src/components/CompletadosScreen';
 import PerfilScreen from './src/components/PerfilScreen';
+
+interface TabIconProps {
+  name: string;
+  color: string;
+  size: number;
+}
+
+const TabIcon: React.FC<TabIconProps> = ({ name, color, size }) => (
+  <Icon name={name} size={size} color={color} />
+);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -19,14 +29,14 @@ const MainTabs = () => (
     initialRouteName="Asignaciones"
     screenOptions={{
       tabBarShowLabel: false,
+      tabBarStyle: { backgroundColor: '#FFFFFF' },
     }}
   >
     <Tab.Screen
       name="Asignaciones"
       component={AsignacionesScreen}
       options={{
-        tabBarIcon: ({ color, size }) => (
-       <Icon name="list-outline" size={size} color={color} /> 
+        tabBarIcon: ({ color = '#2F62EE', size = 30 }) => ( <TabIcon name="assignment" size={size} color={color} />
         ),
       }}
     />
@@ -34,8 +44,8 @@ const MainTabs = () => (
       name="Completados"
       component={CompletadosScreen}
       options={{
-        tabBarIcon: ({ color, size }) => (
-          <Icon name="checkmark-done-outline" size={size} color={color} /> 
+        tabBarIcon: ({ color = '#2F62EE', size = 30 }) => (
+          <TabIcon name="check-circle" size={size} color={color} />
         ),
       }}
     />
@@ -43,8 +53,8 @@ const MainTabs = () => (
       name="Perfil"
       component={PerfilScreen}
       options={{
-        tabBarIcon: ({ color, size }) => (
-          <Icon name="person-circle-outline" size={size} color={color} />
+        tabBarIcon: ({ color = '#2F62EE', size = 30 }) => (
+          <TabIcon name="person" size={size} color={color} />
         ),
       }}
     />

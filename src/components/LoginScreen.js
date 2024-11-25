@@ -17,6 +17,13 @@ const LoginScreen = ({ navigation }) => {
   const [modalType, setModalType] = useState('success');
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setModalType('error');
+      setModalMessage('Por favor completa todos los campos.');
+      setIsModalVisible(true);
+      return;
+  }
+
     try {
       const response = await fetch('http://192.168.56.1:3001/api/login', {
         method: 'POST',
@@ -59,7 +66,7 @@ const LoginScreen = ({ navigation }) => {
         onBackdropPress={() => setIsModalVisible(false)}
         animationIn="slideInUp"
         animationOut="slideOutDown"
-        backdropOpacity={0.5}
+        backdropOpacity={0.7}
       >
         <View
           style={[
@@ -163,12 +170,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'sans-serif-medium',
   },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 0,
+  },
   modalContent: {
-    width: '80%',
-    padding: 20,
-    borderRadius: 10,
+    width: '85%',
+    padding: 25,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
   },
   successBackground: {
     backgroundColor: '#2F62EE',
