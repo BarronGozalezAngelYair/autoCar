@@ -8,7 +8,7 @@ import {
   Image,
 } from 'react-native';
 
-
+//prueba de repositorio
 const AsignacionesScreen = ({ navigation }) => {
   const [asignaciones, setAsignaciones] = useState([]);
 
