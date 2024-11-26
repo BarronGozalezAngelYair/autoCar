@@ -69,9 +69,14 @@ const InformacionScreen = ({ route, navigation }) => {
                 <Text style={styles.detailTitle}>Servicio:</Text>
                 <Text style={styles.detail}>{asignacion.servicio}</Text>
                 <Image
-                    source={{ uri: `https://192.168.56.1:3001/uploads/${asignacion.imagen}` }}
-                    style={styles.carImage}
-                />
+                     source={{
+                        uri: asignacion.imagen && asignacion.imagen !== null
+                        ? `https://192.168.56.1:3001/uploads/${asignacion.imagen}`
+                        : require('../images/ia31.jpg')
+                         }}
+                     style={styles.carImage}
+                    />
+
             </View>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Reporte', { id_cita })}>

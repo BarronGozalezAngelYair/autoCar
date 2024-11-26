@@ -131,7 +131,7 @@ router.get('/completados', (req, res) => {
         FROM reportes r
         JOIN citas c ON r.id_cita = c.id
         JOIN usuarios u ON c.id_usuario = u.id
-        JOIN vehiculos v ON u.id = v.id_usuario
+        LEFT JOIN vehiculos v ON u.id = v.id_usuario
         WHERE r.fecha_fin IS NOT NULL;
     `;
 
@@ -157,7 +157,7 @@ router.get('/usuarios/trabajadores/:id', (req, res) => {
             u.foto
         FROM usuarios AS u
         JOIN perfiles AS p ON u.id_perfil = p.id
-        WHERE p.id = 3 AND u.id = ?;
+        WHERE p.id = 3 AND u.id = <userId>;
     `;
 
     connection.query(query, [id], (err, results) => {

@@ -97,6 +97,7 @@ const ReporteScreen = ({ route, navigation }) => {
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
                 backdropOpacity={0.5}
+                style={styles.modalContainer}
             >
                 <View
                     style={[
@@ -178,19 +179,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         backgroundColor: 'white',
     },
     logo: {
-        width: 500,
-        height: 150,
+        width: 660,
+        height: 250,
         resizeMode: 'contain',
         alignSelf: 'center',
-        marginBottom: 16,
+        marginBottom: 24,
     },
     card: {
-        width: '190%',
-        maxWidth: 350,
+        width: '250%',
+        maxWidth: 380,
         backgroundColor: '#FFF',
         borderRadius: 20,
         paddingVertical: 20,
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 14,
-        marginBottom: 20,
+        marginBottom: 60,
     },
     inputContainer: {
         backgroundColor: '#f9f9f9',
@@ -238,12 +239,22 @@ const styles = StyleSheet.create({
         fontFamily: 'sans-serif-medium',
         textAlign: 'center',
     },
+    modalContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 0,
+    },
     modalContent: {
-        width: '80%',
-        padding: 20,
-        borderRadius: 10,
+        width: '80%', // ajustado para centrado
+        padding: 25,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 8,
     },
     successBackground: {
         backgroundColor: '#2F62EE',

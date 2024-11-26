@@ -7,16 +7,24 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+import Modal from 'react-native-modal';
 
-//prueba de repositorio
 const AsignacionesScreen = ({ navigation }) => {
   const [asignaciones, setAsignaciones] = useState([]);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const obtenerAsignaciones = () => {
     fetch('http://192.168.56.1:3001/api/asignaciones')
       .then(response => response.json())
-      .then((data) => setAsignaciones(data))
+      .then((data) => {
+        setAsignaciones(data);
+
+        if (data.length > 0) {
+          setModalMessage('¡Tienes nuevas asignaciones!');
+          setIsModalVisible(true);
+        }
+      })
       .catch(error => console.error('Error al obtener asignaciones:', error));
   };
 
@@ -33,7 +41,7 @@ const AsignacionesScreen = ({ navigation }) => {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const anio = fecha.getFullYear();
     return `${dia}/${mes}/${anio}`;
-};
+  };
 
   const fmthora = (hora) => {
     return hora.slice(0, 5);
@@ -42,15 +50,15 @@ const AsignacionesScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
-      source={require('../images/mvl_asignaciones.png')}
-      style={styles.logo}
+        source={require('../images/mvl_asignaciones.png')}
+        style={styles.logo}
       />
       <View style={styles.asignacionesList}>
         {asignaciones.map((asignacion, index) => (
           <TouchableOpacity
             key={index}
             style={styles.card}
-            onPress={() => navigation.navigate('Informacion', { id_cita: asignacion.id_cita})}
+            onPress={() => navigation.navigate('Informacion', { id_cita: asignacion.id_cita })}
           >
             <Text style={styles.title}>Nombre: {asignacion.cliente}</Text>
             <Text style={styles.details}>Fecha: {fmtfecha(asignacion.fecha)}</Text>
@@ -58,6 +66,18 @@ const AsignacionesScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
+
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={() => setIsModalVisible(false)}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>{modalMessage}</Text>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -71,11 +91,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   logo: {
-    width: 500,
-    height: 150,
+    width: 640,
+    height: 250,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   asignacionesList: {
     width: '100%',
@@ -104,6 +124,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     marginBottom: 5,
+  },
+  modalContent: {
+    backgroundColor: '#2F62EE',
+    padding: 25,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  modalText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

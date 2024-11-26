@@ -22,7 +22,7 @@ const LoginScreen = ({ navigation }) => {
       setModalMessage('Por favor completa todos los campos.');
       setIsModalVisible(true);
       return;
-  }
+    }
 
     try {
       const response = await fetch('http://192.168.56.1:3001/api/login', {
@@ -64,9 +64,10 @@ const LoginScreen = ({ navigation }) => {
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setIsModalVisible(false)}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
         backdropOpacity={0.7}
+        style={styles.modalContainer}
       >
         <View
           style={[
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   logo: {
-    width: 500,
+    width: 660,
     height: 250,
     resizeMode: 'contain',
     alignSelf: 'center',
@@ -163,14 +164,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     elevation: 15,
+    marginTop: 20,
   },
   buttonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'sans-serif-medium',
+    textAlign: 'center',
   },
-  modal: {
+  modalContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     margin: 0,

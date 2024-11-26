@@ -69,7 +69,7 @@ const PerfilScreen = ({ route, navigation }) => {
       <View style={styles.card}>
         <View style={styles.imageContainer}>
           <Image
-            source={trabajador.foto ? { uri: trabajador.foto } : require('../images/cr7.jpeg')}
+            source={trabajador.foto ? { uri: trabajador.foto } : require('../images/fotoperfil.jpg')}
             style={styles.profileImage}
           />
         </View>

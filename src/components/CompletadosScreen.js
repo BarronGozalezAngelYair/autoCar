@@ -34,6 +34,9 @@ const CompletadosScreen = () => {
     };
 
     obtenerCompletados();
+
+    const interval = setInterval(obtenerCompletados, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
