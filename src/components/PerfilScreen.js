@@ -1,42 +1,67 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  Alert,
 } from 'react-native';
-import Modal from 'react-native-modal';
 
-const PerfilScreen = ({ route, navigation }) => {
-  const { userId } = route.params || {};
+const PerfilScreen = ({ navigation }) => {
   const [trabajador, setTrabajador] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [numReportes, setNumReportes] = useState(0);
+  const [numCitas, setNumCitas] = useState(0);
+
+  const fetchData = useCallback(() => {
+    // Fetch trabajador data
+    fetch('http://192.168.56.1:3001/api/usuarios')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          setTrabajador(data[0]);
+        } else {
+          Alert.alert('Error', 'No se encontró trabajador.');
+        }
+      })
+      .catch((error) =>
+        console.error('Error al obtener los datos del trabajador:', error)
+      );
+
+    // Fetch número de reportes
+    fetch('http://192.168.56.1:3001/api/reportes/numero')
+      .then((response) => response.json())
+      .then((data) => setNumReportes(data.numero || 0))
+      .catch((error) =>
+        console.error('Error al obtener el número de reportes:', error)
+      );
+
+    // Fetch número de citas
+    fetch('http://192.168.56.1:3001/api/citas/numero')
+      .then((response) => response.json())
+      .then((data) => setNumCitas(data.numero || 0))
+      .catch((error) =>
+        console.error('Error al obtener el número de citas:', error)
+      );
+  }, []); // This ensures fetchData is stable and doesn't change on re-renders
 
   useEffect(() => {
-    if (!userId) {
-      setModalMessage('ID de usuario no proporcionado.');
-      setIsModalVisible(true);
-      return;
-    }
+    fetchData();
 
-    fetch(`http://192.168.56.1:3001/api/usuarios/trabajadores/${userId}`)
-      .then((response) => response.json())
-      .then((data) => setTrabajador(data))
-      .catch((error) => {
-        console.error('Error al obtener los datos del trabajador:', error);
-        setModalMessage('Error al cargar el perfil');
-        setIsModalVisible(true);
-      });
-  }, [userId]);
+    const intervalId = setInterval(fetchData, 20000);
+
+    return () => clearInterval(intervalId); // Limpiar intervalo cuando el componente se desmonte
+  }, [fetchData]);
 
   const handleLogout = () => {
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
     });
+  };
+
+  const handleEditPhoto = () => {
+    Alert.alert('Editar Foto', 'Función para editar foto aún no implementada.');
   };
 
   if (!trabajador) {
@@ -47,77 +72,56 @@ const PerfilScreen = ({ route, navigation }) => {
     );
   }
 
+  // Foto por defecto si no existe la imagen
+  const fotoUrl = trabajador.foto
+    ? { uri: trabajador.foto }
+    : require('../images/fotoperfil.jpg');
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setIsModalVisible(false)}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        backdropOpacity={0.5}
-      >
-        <View style={styles.modalContent}>
-          <Text style={styles.modalText}>{modalMessage}</Text>
-        </View>
-      </Modal>
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <TouchableOpacity onPress={handleEditPhoto}>
+          <Image source={fotoUrl} style={styles.profileImage} />
+        </TouchableOpacity>
+        <Text style={styles.text}>Editar Foto</Text>
+      </View>
 
-      <Image
-        source={require('../images/_mvl_perfil.png')}
-        style={styles.logo}
-      />
-
-      <View style={styles.card}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={trabajador.foto ? { uri: trabajador.foto } : require('../images/fotoperfil.jpg')}
-            style={styles.profileImage}
-          />
+      {/* Card de Datos del Trabajador */}
+      <View style={[styles.card, styles.workerCard]}>
+        <Text style={styles.cardTitle1}>Datos del Trabajador</Text>
+        <View style={styles.workerInfo}>
+          <Text style={styles.cardValuet}>Nombre: {trabajador.nombre}</Text>
+          <Text style={styles.cardValuet}>Correo: {trabajador.correo}</Text>
+          <Text style={styles.cardValuet}>Teléfono: {trabajador.telefono}</Text>
         </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.textLabel}>Nombre:</Text>
-          <Text style={styles.textValue}>{trabajador.nombre_completo}</Text>
-          <Text style={styles.textLabel}>Teléfono:</Text>
-          <Text style={styles.textValue}>{trabajador.telefono}</Text>
-          <Text style={styles.textLabel}>Correo:</Text>
-          <Text style={styles.textValue}>{trabajador.correo}</Text>
+      </View>
+
+      {/* Cards de Reportes y Citas */}
+      <View style={styles.cardsContainer}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Reportes</Text>
+          <Text style={[styles.cardValue, styles.blueText]}>{numReportes}</Text>
+        </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Citas</Text>
+          <Text style={[styles.cardValue, styles.blueText]}>{numCitas}</Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Cerrar Sesión</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'flex-start',
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: 'white',
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
-    marginTop: 40,
-    marginBottom: 20,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    elevation: 10,
-    marginBottom: 20,
-    alignItems: 'center',
   },
   imageContainer: {
     marginBottom: 20,
@@ -125,26 +129,70 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     borderWidth: 3,
-    borderColor: '#2F62EE',
+    borderColor: '#fff',
   },
-  infoContainer: {
-    width: '100%',
-    alignItems: 'flex-start',
-  },
-  textLabel: {
+  text: {
+    marginTop: 10,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#555',
-    marginBottom: 5,
   },
-  textValue: {
+  cardsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: 500,
+    marginBottom: 40,
+  },
+  card: {
+    width: '48%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+    marginBottom: 20, // Espacio entre cards
+  },
+  workerCard: {
+    width: '100%', // Ocupa el ancho completo
+    alignItems: 'flex-start', // Alinear contenido a la izquierda
+    paddingHorizontal: 20, // Espacio interno para el contenido
+  },
+  workerInfo: {
+    marginTop: 2, // Separación entre título y contenido
+  },
+  cardTitle1: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2F62EE',
+    marginBottom: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  cardValue: {
     fontSize: 16,
     color: '#333',
-    marginBottom: 10,
+  },
+  cardValuet: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  blueText: {
+    color: '#2F62EE', // Color azul para los números
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   button: {
     width: '90%',
@@ -159,20 +207,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  modalContent: {
-    width: '80%',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2F62EE',
-  },
-  modalText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

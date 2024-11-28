@@ -29,14 +29,24 @@ const MainTabs = () => (
     initialRouteName="Asignaciones"
     screenOptions={{
       tabBarShowLabel: false,
-      tabBarStyle: { backgroundColor: '#FFFFFF' },
+      tabBarStyle: {
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: '#ccc',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+      },
     }}
   >
     <Tab.Screen
       name="Asignaciones"
       component={AsignacionesScreen}
       options={{
-        tabBarIcon: ({ color = '#2F62EE', size = 30 }) => ( <TabIcon name="assignment" size={size} color={color} />
+        tabBarIcon: ({ color = '#2F62EE', size = 30 }) => (
+          <TabIcon name="assignment" size={size} color={color} />
         ),
       }}
     />
@@ -62,9 +72,10 @@ const MainTabs = () => (
 );
 
 const App = () => {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName= 'Login'>
         <Stack.Screen
           name="Login"
           component={LoginScreen}

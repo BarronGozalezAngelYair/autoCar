@@ -146,9 +146,9 @@ router.get('/completados', (req, res) => {
 });
 
 
-//EndPoint para Trabajadores
-router.get('/usuarios/trabajadores/:id', (req, res) => {
-    const { id } = req.params;
+// Endpoint para obtener datos específicos del trabajador por ID
+router.get('/usuarios/trabajador/:id', (req, res) => {
+    const { id } = req.params; // Obtener el ID del trabajador desde los parámetros de la ruta
     const query = `
         SELECT 
             CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS nombre_completo,
@@ -157,19 +157,53 @@ router.get('/usuarios/trabajadores/:id', (req, res) => {
             u.foto
         FROM usuarios AS u
         JOIN perfiles AS p ON u.id_perfil = p.id
-        WHERE p.id = 3 AND u.id = <userId>;
+        WHERE p.id = 3 AND u.id = ?;  // Usar el ID para la consulta
     `;
 
     connection.query(query, [id], (err, results) => {
         if (err) {
-            console.error('Error al obtener los trabajadores:', err);
-            return res.status(500).json({ error: 'Error al obtener los trabajadores' });
+            console.error('Error al obtener los datos del trabajador:', err);
+            return res.status(500).json({ error: 'Error al obtener los datos del trabajador' });
         }
-        if (results.length === 0) {
-            return res.status(400).json({ error: 'Trabajador no encontrado' });
+        if (!results || results.length === 0) {
+            return res.status(404).json({ error: 'No se encontró el trabajador.' });
         }
-        res.json(results[0]);
+        res.json(results[0]); // Devolver el primer resultado, que debe ser el único
     });
 });
+
+
+// Ruta: /api/reportes/numero
+router.get('/reportes/numero', (req, res) => {
+    const query = `
+      SELECT COUNT(*) AS numero
+      FROM reportes
+    `;
+    connection.query(query, (err, results) => {
+      if (err) {
+        console.error('Error al obtener el número de reportes:', err);
+        return res.status(500).json({ error: 'Error al obtener el número de reportes' });
+      }
+      res.json({ numero: results[0].numero });
+    });
+  });
+
+// Ruta: /api/citas/numero
+router.get('/citas/numero', (req, res) => {
+  const query = `
+    SELECT COUNT(*) AS numero
+    FROM citas
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener el número de citas:', err);
+      return res.status(500).json({ error: 'Error al obtener el número de citas' });
+    }
+    res.json({ numero: results[0].numero });
+  });
+});
+
+
 
 module.exports = router;

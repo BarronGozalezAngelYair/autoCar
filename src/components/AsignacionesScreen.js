@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AsignacionesScreen = ({ navigation }) => {
   const [asignaciones, setAsignaciones] = useState([]);
@@ -28,12 +29,14 @@ const AsignacionesScreen = ({ navigation }) => {
       .catch(error => console.error('Error al obtener asignaciones:', error));
   };
 
-  useEffect(() => {
-    obtenerAsignaciones();
+  useFocusEffect(
+    React.useCallback(() => {
+      obtenerAsignaciones();
 
-    const interval = setInterval(obtenerAsignaciones, 40000);
-    return () => clearInterval(interval);
-  }, []);
+      const interval = setInterval(obtenerAsignaciones, 40000);
+      return () => clearInterval(interval);
+    }, [])
+  );
 
   const fmtfecha = (fechaISO) => {
     const fecha = new Date(fechaISO);
