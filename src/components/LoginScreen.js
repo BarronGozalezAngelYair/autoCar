@@ -23,7 +23,6 @@ const LoginScreen = ({ navigation }) => {
       setIsModalVisible(true);
       return;
     }
-
     try {
       const response = await fetch('http://192.168.56.1:3001/api/login', {
         method: 'POST',
@@ -35,16 +34,21 @@ const LoginScreen = ({ navigation }) => {
           password: password,
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
         setModalType('success');
         setModalMessage('Inicio de sesión correcto');
         setIsModalVisible(true);
+  
+        // Asegúrate de que `data.id` es la forma correcta de obtener el `userId`
+        const userId = data.id;
+  
         setTimeout(() => {
           setIsModalVisible(false);
-          navigation.replace('MainTabs');
+          // Pasa el `userId` a las pantallas siguientes
+          navigation.replace('MainTabs', { id: userId });
         }, 2000);
       } else {
         setModalType('error');
@@ -58,6 +62,7 @@ const LoginScreen = ({ navigation }) => {
       setIsModalVisible(true);
     }
   };
+  
 
   return (
     <View style={styles.container}>

@@ -148,7 +148,10 @@ router.get('/completados', (req, res) => {
 
 // Endpoint para obtener datos específicos del trabajador por ID
 router.get('/usuarios/trabajador/:id', (req, res) => {
-    const { id } = req.params; // Obtener el ID del trabajador desde los parámetros de la ruta
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).send('Falta el ID del trabajador.');
+    }
     const query = `
         SELECT 
             CONCAT(u.nombre, ' ', u.app, ' ', u.apm) AS nombre_completo,
@@ -157,7 +160,7 @@ router.get('/usuarios/trabajador/:id', (req, res) => {
             u.foto
         FROM usuarios AS u
         JOIN perfiles AS p ON u.id_perfil = p.id
-        WHERE p.id = 3 AND u.id = ?;  // Usar el ID para la consulta
+        WHERE p.id = 3 AND u.id = ?;  
     `;
 
     connection.query(query, [id], (err, results) => {

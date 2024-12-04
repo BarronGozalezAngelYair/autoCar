@@ -8,18 +8,19 @@ import {
   Alert,
 } from 'react-native';
 
-const PerfilScreen = ({ navigation }) => {
+const PerfilScreen = ({ navigation, route }) => {
   const [trabajador, setTrabajador] = useState(null);
   const [numReportes, setNumReportes] = useState(0);
   const [numCitas, setNumCitas] = useState(0);
 
   const fetchData = useCallback(() => {
-    // Fetch trabajador data
-    fetch('http://192.168.56.1:3001/api/usuarios')
+
+    // Fetch datos del trabajador
+    fetch(`http://192.168.56.1:3001/api/usuarios/trabajador/id=2`)
       .then((response) => response.json())
       .then((data) => {
-        if (data.length > 0) {
-          setTrabajador(data[0]);
+        if (data) {
+          setTrabajador(data);
         } else {
           Alert.alert('Error', 'No se encontró trabajador.');
         }
@@ -43,14 +44,15 @@ const PerfilScreen = ({ navigation }) => {
       .catch((error) =>
         console.error('Error al obtener el número de citas:', error)
       );
-  }, []); // This ensures fetchData is stable and doesn't change on re-renders
+  }, []);
 
   useEffect(() => {
     fetchData();
 
+    // Refrescar datos cada 20 segundos
     const intervalId = setInterval(fetchData, 20000);
 
-    return () => clearInterval(intervalId); // Limpiar intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId); // Limpiar intervalo al desmontar componente
   }, [fetchData]);
 
   const handleLogout = () => {
@@ -83,10 +85,10 @@ const PerfilScreen = ({ navigation }) => {
         <TouchableOpacity onPress={handleEditPhoto}>
           <Image source={fotoUrl} style={styles.profileImage} />
         </TouchableOpacity>
-        <Text style={styles.text}>Editar Foto</Text>
+        <Text style={styles.text}></Text>
       </View>
 
-      {/* Card de Datos del Trabajador */}
+      {/* Card de Datos del Trabajador
       <View style={[styles.card, styles.workerCard]}>
         <Text style={styles.cardTitle1}>Datos del Trabajador</Text>
         <View style={styles.workerInfo}>
@@ -94,7 +96,7 @@ const PerfilScreen = ({ navigation }) => {
           <Text style={styles.cardValuet}>Correo: {trabajador.correo}</Text>
           <Text style={styles.cardValuet}>Teléfono: {trabajador.telefono}</Text>
         </View>
-      </View>
+      </View> */}
 
       {/* Cards de Reportes y Citas */}
       <View style={styles.cardsContainer}>
@@ -159,15 +161,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 10,
-    marginBottom: 20, // Espacio entre cards
+    marginBottom: 20,
   },
   workerCard: {
-    width: '100%', // Ocupa el ancho completo
-    alignItems: 'flex-start', // Alinear contenido a la izquierda
-    paddingHorizontal: 20, // Espacio interno para el contenido
+    width: '100%',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
   },
   workerInfo: {
-    marginTop: 2, // Separación entre título y contenido
+    marginTop: 2,
   },
   cardTitle1: {
     fontSize: 18,
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   blueText: {
-    color: '#2F62EE', // Color azul para los números
+    color: '#2F62EE',
     fontSize: 24,
     fontWeight: 'bold',
   },
